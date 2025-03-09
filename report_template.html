@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ doc_title }}</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background-color: #f5f5f5;
+        background: url('bkgd.jpg') no-repeat center center fixed;
+        background-size: cover;
+        color: #333;
+        box-sizing: border-box;
+    }
+    .report-container {
+        max-width: 700px; /* Adjusted to better fit content */
+        margin: 20px auto;
+        padding: 15px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+        color: #333;
+        text-align: center;
+    }
+    p {
+        font-size: 16px;
+        line-height: 1.6;
+        text-align: left;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        table-layout: fixed; /* Ensures proper width scaling */
+        word-wrap: break-word;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+        word-wrap: break-word;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    img {
+        max-width: 100%;
+        display: block;
+        margin: 20px auto;
+        border-radius: 5px;
+    }
+    .top-button {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background-color: yellow;
+        padding: 0.5rem 1rem;
+        border: 2px solid #333;
+        border-radius: 4px;
+        font-weight: bold;
+        z-index: 999;
+    }
+    .top-button a {
+        color: #000;
+        text-decoration: none;
+    }
+  </style>
+</head>
+<body id="top">
+
+<header class="main-header" style="text-align: center;">
+    <h1>{{ doc_title }}</h1>
+</header>
+
+
+<!-- Table of Contents -->
+<div class="report-container">
+    <nav class="toc">
+        <h3>Table of Contents</h3>
+        <ul>
+            {% for section in sections %}
+                <li><a href="#section-{{ loop.index }}">{{ section.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+</div>
+
+<hr>
+
+<!-- Main Report Content -->
+{% for section in sections %}
+<div class="report-container" id="section-{{ loop.index }}">
+    <h2>{{ section.title }}</h2>
+
+    {% for block in section.blocks %}
+        {% if block.type == "text" %}
+            <p>{{ block.content }}</p>
+
+        {% elif block.type == "image" %}
+            <img src="{{ block.path }}" alt="Inspection Image">
+
+        {% elif block.type == "summary-fixed-table" %}
+            <table>
+                <thead>
+                    <tr>
+                        {% for col in block.rows[0] %}
+                            <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in block.rows[1:] %}
+                        <tr>
+                            {% for col in row %}
+                                <td>{{ col }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% elif block.type == "summary-status-table" %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in block.rows %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+            <p>Unknown block type: {{ block.type }}</p>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endfor %}
+
+<!-- Back to Top Button -->
+<div class="top-button">
+    <a href="#top">TOP</a>
+</div>
+
+</body>
+</html>
